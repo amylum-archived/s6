@@ -1,0 +1,107 @@
+#!/bin/sh -e
+# Public domain.
+
+umask 022
+test -d package -a -d src -a -d conf-compile || { echo 'Wrong working directory.' ; exit 100 ; }
+
+spr=`cat compile/export/conf-sp_root`
+category=`cat compile/export/conf-category`
+name=`cat compile/export/conf-name`
+version=`cat compile/export/conf-version`
+api=`echo $version | cut -d. -f1`
+major=`echo $version | cut -d. -f2`
+minor=`echo $version | cut -d. -f3`
+etc=`cat compile/export/conf-etc`
+libexec=`cat compile/export/conf-install-libexec`
+
+exportit()
+{
+  dir="$1"
+  if test -f "package/$dir.exported" ; then
+    if test -f "compile/export/flag-slashpackage" ; then
+      dest="$spr/$dir"
+      cmd="ln -s"
+      srcbase="../package/$category/$name"
+      echo "Making links in $dest ..."
+    else
+      dest=`cat "compile/export/conf-install-$dir"`
+      cmd="cp -P"
+      srcbase=.
+      echo "Copying files to $dest ..."
+    fi
+    mkdir -p "$dest"
+    for i in `cat "package/$dir.exported"` ; do
+      rm -f "$dest/$i"'{new}'
+      $cmd "$srcbase/$dir/$i" "$dest/$i"'{new}'
+      if test "$srcbase" = "." ; then
+        if test -g "./$dir/$i" ; then
+          chmod g+s "$dest/$i"'{new}'
+        fi
+        if test -u "./$dir/$i" ; then
+          chmod u+s "$dest/$i"'{new}'
+        fi
+      fi
+      mv -f "$dest/$i"'{new}' "$dest/$i"
+    done
+  fi
+}
+
+exportdynlibs()
+{
+  dir="$1"
+  if test -f "package/$dir.exported" ; then
+    if test -f compile/export/flag-slashpackage ; then
+      dest="$spr/$dir"
+      cmd="ln -s"
+      srcbase="../package/$category/$name"
+      echo "Making links in $dest ..."
+    else
+      dest=`cat "compile/export/conf-install-$dir"`
+      cmd="cp -P"
+      srcbase=.
+      echo "Copying files to $dest ..."
+    fi
+    mkdir -p "$dest"
+    for i in `cat "package/$dir.exported"` ; do
+      rm -f "$dest/$i.$version"'{new}' "$dest/$i.$api.$major.$minor"'{new}' "$dest/$i.$api.$major"'{new}' "$dest/$i.$api"'{new}' "$dest/$i"'{new}'
+      $cmd "$srcbase/$dir/$i.$version" "$dest/$i.$version"'{new}'
+      mv -f "$dest/$i.$version"'{new}' "$dest/$i.$version"
+      ln -s "$i.$version" "$dest/$i.$api.$major.$minor"'{new}'
+      mv -f "$dest/$i.$api.$major.$minor"'{new}' "$dest/$i.api.$major.$minor"
+      ln -s "$i.$api.$major.$minor" "$dest/$i.$api.$major"'{new}'
+      mv -f "$dest/$i.$api.$major"'{new}' "$dest/$i.$api.$major"
+      ln -s "$i.$api.$major" "$dest/$i.$api"'{new}'
+      mv -f "$dest/$i.$api"'{new}' "$dest/$i.$api"
+      ln -s "$i.$api" "$dest/$i"'{new}'
+      mv -f "$dest/$i"'{new}' "$dest/$i"
+    done
+  fi
+}
+
+exportlibexec()
+{
+  echo "Copying unexported binaries to $libexec ..."
+  for i in `cut -f1 < package/$1 | grep -vFf package/$1.exported` ; do
+    rm -f "$libexec/$i"'{new}'
+    cp -P "$dir/$i" "$libexec/$i"'{new}'
+    mv -f "$libexec/$i"'{new}' "$libexec/$i"
+  done
+}
+
+exportit command
+exportit library
+test -f compile/export/flag-allstatic || exportdynlibs library.so
+test -f compile/export/flag-slashpackage || exportlibexec command
+exportit include
+exportit man
+exportit doc
+exportit sysdeps
+ 
+if test -d ./etc -a -f package/global ; then
+  echo "Installing global files in $etc ..."
+  for i in `cat package/global` ; do
+    rm -f "$etc/$i"'{new}'
+    cp -P ./etc/$i "$etc/$i"'{new}'
+    mv -f "$etc/$i"'{new}' "$etc/$i"
+  done
+fi

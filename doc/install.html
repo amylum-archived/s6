@@ -1,0 +1,110 @@
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="Content-Language" content="en" />
+    <title>s6: how to install</title>
+    <meta name="Description" content="s6: how to install" />
+    <meta name="Keywords" content="s6 download installation install" />
+    <!-- <link rel="stylesheet" type="text/css" href="http://skarnet.org/default.css" /> -->
+  </head>
+<body>
+
+<p>
+<a href="index.html">s6</a><br />
+<a href="http://skarnet.org/software/">Software</a><br />
+<a href="http://skarnet.org/">skarnet.org</a>
+</p>
+
+<h1> How to install s6 </h1>
+
+<p>
+Like any other piece of software (and information generally),
+s6 comes with NO WARRANTY.
+</p>
+
+<p>
+ s6 is available under the terms of the
+<a href="http://en.wikipedia.org/wiki/ISC_license">ISC license</a>,
+see the included <tt>package/COPYING</tt> file.
+</p>
+
+<h2> Requirements </h2>
+<h3> System </h3>
+<ul>
+ <li> A Unix-like system </li>
+</ul>
+
+<h3> Build-time </h3>
+<ul>
+ <li> A standard C development environment </li>
+ <li> The <a href="http://skarnet.org/software/skalibs/">skalibs</a> package, version 1.6.0.0 or higher </li>
+ <li> The <a href="http://skarnet.org/software/execline/">execline</a> package, version 1.3.1.1 or higher </li>
+</ul>
+
+<h3> Run-time </h3>
+
+<p>
+ Depending on the way you compile and link s6:
+</p>
+
+<ul>
+ <li> No dependencies (static executables) </li>
+ <li> or a standard C run-time environment (dynamic executables with flag-allstatic) </li>
+ <li> or a standard C run-time environment, the
+  <a href="http://skarnet.org/software/execline/">execline</a> package, version 1.3.1.1 or higher,
+  and the <a href="http://skarnet.org/software/skalibs/">skalibs</a> package, version 1.6.0.0 or higher
+ (dynamic executables without flag-allstatic) </li>
+</ul>
+
+<h2> Installation </h2>
+
+<p>
+s6 is best used with the
+<a href="http://cr.yp.to/slashpackage.html">slashpackage convention</a>,
+but it is not a hard requirement.
+</p>
+
+<ul>
+ <li> Create a <tt>/package</tt> directory:
+<pre>
+     mkdir -p /package
+     chmod 1755 /package
+     cd /package
+</pre>
+(If you are not following the slashpackage convention, you can use
+any temporary build directory instead.)
+ </li>
+
+ <li> Download the latest version of s6,
+<a href="s6-1.1.3.1.tar.gz">s6-1.1.3.1.tar.gz</a>,
+into <tt>/package</tt>. </li>
+
+ <li> Unpack the s6 package:
+<pre>
+     tar -zxpvf s6-1.1.3.1.tar.gz
+     # if you do not have GNU tar, check with your gunzip and tar manual pages.
+     rm s6-1.1.3.1.tar.gz
+     cd admin/s6-1.1.3.1
+</pre> </li>
+
+ <li> Configure the package by editing the files in <tt>conf-compile/</tt>
+following <a href="http://www.skarnet.org/software/conf-compile.html">these
+instructions</a>. The s6 package also supports
+<a href="flags.html">this list of flags</a>. </li>
+
+ <li> Compile and set up s6:
+<pre>
+     make
+     sudo make install
+</pre>
+ The compilation and installation processes are detailed
+<a href="http://www.skarnet.org/software/compile.html">here</a>. </li>
+ 
+ <li> To save disk space:
+<pre>
+     make clean
+</pre> </li>
+</ul>
+
+</body>
+</html>

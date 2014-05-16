@@ -1,0 +1,5 @@
+/* ISC license. */
+
+#ifndef S6_CONFIG_H
+#define S6_CONFIG_H
+

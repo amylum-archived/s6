@@ -1,0 +1,7 @@
+#!/bin/sh -e
+# Public domain.
+
+echo
+echo 'To configure this package, manually fill in the conf-compile directory.'
+echo 'Please refer to the instructions at http://www.skarnet.org/software/compile.html'
+echo

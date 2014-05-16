@@ -1,0 +1,9 @@
+ftrig1_free.o
+ftrig1_make.o
+-lunixonacid
+-ldatastruct
+-lrandom
+-lstdcrypto
+-lstddjb
+`cat socket.lib`
+`cat taianow.lib`

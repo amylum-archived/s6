@@ -1,0 +1,10 @@
+#!/bin/sh -e
+# Public domain.
+
+umask 022
+test -d package -a -d src -a -d conf-compile || { echo 'Wrong working directory.' ; exit 100 ; }
+
+package/prepare
+package/configure
+package/make
+exec package/makeinstall

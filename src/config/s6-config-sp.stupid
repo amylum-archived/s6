@@ -1,0 +1,2 @@
+#define S6_BINPREFIX "$PACKAGE_HOME/command/"
+#define S6_EXTBINPREFIX "$PACKAGE_CALLPATH/command/"

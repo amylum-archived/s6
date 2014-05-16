@@ -1,0 +1,29 @@
+#!/bin/sh -e
+
+version=`cat conf-version`
+api=`echo "$version" | cut -d. -f1`
+major=`echo "$version" | cut -d. -f2`
+minor=`echo "$version" | cut -d. -f3`
+
+test -f flag-allstatic && trydyn=false || trydyn=true
+
+if test -f EXPORT.header ; then
+  cat < EXPORT.header
+fi
+
+ls -1 deps-exe
+
+for file in `ls -1 deps-lib` ; do
+  echo "lib$file.a"
+  if $trydyn && test -x deps-lib/$file ; then
+    echo "lib$file.so.$version"
+    echo "lib$file.so.$api.$major.$minor"
+    echo "lib$file.so.$api.$major"
+    echo "lib$file.so.$api"
+    echo "lib$file.so"
+  fi
+done
+
+if test -f EXPORT.footer ; then
+  cat EXPORT.footer
+fi

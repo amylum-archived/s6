@@ -1,0 +1,13 @@
+#!/bin/sh -e
+# Public domain.
+
+umask 022
+test -d package -a -d src -a -d conf-compile || { echo 'Wrong working directory.' ; exit 100 ; }
+
+name=`cat compile/export/conf-name`
+version=`cat compile/export/conf-version`
+
+echo "Creating symlink $name -> $name-$version..."
+rm -f "$name"
+ln -s "$name-$version" "$name"
+mv -f "$name" ..

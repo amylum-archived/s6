@@ -1,0 +1,14 @@
+#!/bin/sh
+
+ld="`head -n 1 conf-dynld`"
+cat warn-auto.sh
+echo 'main="$1" ; version="$2" ; shift ; shift ; api=`echo "$version" | cut -f1 -d.` ; major=`echo "$version" | cut -f2 -d.` ; minor=`echo "$version" | cut -f3 -d.`'
+echo "$ld" '-fPIC -shared -Wl,-h"$main.$api" -o "$main.$version" ${1+"$@"}'
+echo 'rm -f "$main.$api.$major.$minor"{new} "$main.$api.$major"{new} "$main.$api"{new} "$main"{new}'
+echo 'ln -s "$main.$version" "$main.$api.$major.$minor"{new} ; mv -f "$main.$api.$major.$minor"{new} "$main.$api.$major.$minor"'
+echo 'ln -s "$main.$api.$major.$minor" "$main.$api.$major"{new}'
+echo 'mv -f "$main.$api.$major"{new} "$main.$api.$major"'
+echo 'ln -s "$main.$api.$major" "$main.$api"{new}'
+echo 'mv -f "$main.$api"{new} "$main.$api"'
+echo 'ln -s "$main.$api" "$main"{new}'
+echo 'mv -f "$main"{new} "$main"'

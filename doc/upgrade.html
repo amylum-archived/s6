@@ -1,0 +1,148 @@
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="Content-Language" content="en" />
+    <title>How to upgrade s6</title>
+    <meta name="Description" content="How to upgrade s6" />
+    <meta name="Keywords" content="s6 installation upgrade" />
+    <!-- <link rel="stylesheet" type="text/css" href="http://skarnet.org/default.css" /> -->
+  </head>
+<body>
+
+<p>
+<a href="index.html">s6</a><br />
+<a href="http://skarnet.org/software/">Software</a><br />
+<a href="http://skarnet.org/">skarnet.org</a>
+</p>
+
+<h1> How to upgrade s6 </h1>
+
+<h2> from 1.1.3 to 1.1.3.1 </h2>
+    
+<ul>                                                                       
+ <li> <a href="http://skarnet.org/software/skalibs/">skalibs</a> dependency
+changed to 1.6.0.0 </li>                                                      
+ <li> <a href="http://skarnet.org/software/execline/">execline</a> dependency
+changed to 1.3.1.1 </li>
+</ul>
+
+<h2> from 1.1.2 to 1.1.3 </h2>
+
+<ul>
+ <li> <a href="http://skarnet.org/software/skalibs/">skalibs</a> dependency
+changed to 1.5.1. </li>
+ <li> <a href="http://skarnet.org/software/execline/">execline</a> dependency
+changed to 1.3.1. </li>
+</ul>
+
+<h2> from 1.1.1 to 1.1.2 </h2>
+
+<ul>
+ <li> <a href="http://skarnet.org/software/skalibs/">skalibs</a> dependency
+changed to 1.5.0. </li>
+</ul>
+
+<h2> from 1.1.0 to 1.1.1 </h2>
+
+<p>
+ Version 1.4.2 or later of
+<a href="http://skarnet.org/software/skalibs/">skalibs</a>, as well as
+version 1.2.4 or later of
+<a href="http://skarnet.org/software/execline/">execline</a>, are
+needed to build and/or run s6.
+</p>
+
+<h2> from 1.0.0 to 1.1.0 </h2>
+
+<p>
+ Version 1.4.0 or later of
+<a href="http://skarnet.org/software/skalibs/">skalibs</a>, as well as
+version 1.2.2 or later of
+<a href="http://skarnet.org/software/execline/">execline</a>, are
+needed to build and/or run s6.
+</p>
+
+
+<p>
+ The s6lock library has been added and the s6-setlock binary
+modified to use it, but no change in dependencies has been added.
+It is, as always, recommended to use the latest version of skalibs
+(and also execline to a lesser extent).
+</p>
+
+<h2> from 0.17 to 1.0.0 </h2>
+
+<p>
+ Version 1.3.0 or later of
+<a href="http://skarnet.org/software/skalibs/">skalibs</a>, as well as
+version 1.2.0 or later of
+<a href="http://skarnet.org/software/execline/">execline</a>, are
+needed to build and/or run s6.
+</p>
+
+<p>
+ FHS support has been added. See the end of
+<a href="http://skarnet.org/software/skalibs/slashpackage.html">this page</a>
+for the rationale, and the
+<a href="http://skarnet.org/software/conf-compile.html">general skarnet.org
+configuration page</a> for how to proceed.
+ <br />
+ This means you can now install the s6 binaries wherever you want. <br />
+ However, since s6 binaries sometimes
+call other s6 binaries, and non-slashpackage installations cannot
+guarantee absolute paths, s6 programs now rely on the PATH environment
+variable to find all their executables on non-slashpackage installations; in
+other words, if you are not extra careful with how you are setting up your
+PATH, things might break.
+</p>
+
+<h2> from 0.16 to 0.17 </h2>
+
+<p>
+ Version 1.2.8 or later of
+<a href="http://www.skarnet.org/software/skalibs/">skalibs</a>, as well as
+version 1.1.5 or later of
+<a href="http://www.skarnet.org/software/execline/">execline</a>, are
+needed to build and/or run s6.
+</p>
+
+<h2> from 0.14 or 0.15 to 0.16 </h2>
+
+<p>
+ Version 1.2.6 or later of
+<a href="http://www.skarnet.org/software/skalibs/">skalibs</a> is
+needed to build and/or run s6.
+</p>
+
+<h2> from 0.13 to 0.14 or 0.15 </h2>
+
+<p>
+ No change in dependencies.
+</p>
+
+<h2> from 0.12 to 0.13 </h2>
+
+<p>
+ Version 1.1.1 or later of
+<a href="http://www.skarnet.org/software/skalibs/">skalibs</a> is
+needed to build and/or run s6.
+</p>
+
+<h2> from 0.11 to 0.12 </h2>
+
+<p>
+ You are advised to use at least version 1.0.2 of
+<a href="http://www.skarnet.org/software/skalibs/">skalibs</a>,
+for build-time as well as run-time (if you depend on shared
+skalibs libraries), since older versions have a bug that
+impacts s6.
+</p>
+
+<h2> from 0.10 to 0.11 </h2>
+
+<p>
+ No change in dependencies.
+</p>
+
+</body>
+</html>

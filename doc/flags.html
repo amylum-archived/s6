@@ -1,0 +1,43 @@
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="Content-Language" content="en" />
+    <title>s6: compilation flags</title>
+    <meta name="Description" content="s6: compilation flags" />
+    <meta name="Keywords" content="s6 build compilation flags options" />
+    <!-- <link rel="stylesheet" type="text/css" href="http://skarnet.org/default.css" /> -->
+  </head>
+<body>
+
+<p>
+<a href="index.html">s6</a><br />
+<a href="http://skarnet.org/software/">Software</a><br />
+<a href="http://skarnet.org/">skarnet.org</a>
+</p>
+
+<h1> s6 compilation flags </h1>
+
+<p>
+s6 supports the
+<a href="http://www.skarnet.org/software/conf-compile.html#flag">flag-allstatic
+and flag-slashpackage</a> flags.
+</p>
+
+<p>
+ Since s6 contains software that can be used at a very low level and that need to be
+absolutely dependable, the author <em>recommends the use of <tt>flag-allstatic</tt></em> to
+minimize run-time dependencies, and
+also recommends making static executables by editing the <tt>conf-compile/conf-ld</tt>
+file if your libc supports static linking.
+</p>
+
+<p>
+ Linux users who wish to make static executables should try
+<a href="http://musl-libc.org/">musl</a>
+or the <a href="http://www.uclibc.org/">uClibc</a>.
+Linking against the glibc at best wastes resources, and at worst
+does not work.
+</p>
+
+</body>
+</html>

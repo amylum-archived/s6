@@ -1,0 +1,9 @@
+s6lock_check.o
+s6lock_end.o
+s6lock_startf.o
+s6lock_acquire.o
+s6lock_release.o
+s6lock_update.o
+s6lock_wait_and.o
+s6lock_wait_or.o
+s6lock_zero.o

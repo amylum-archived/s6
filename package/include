@@ -1,0 +1,6 @@
+s6-config.h
+s6.h
+s6-supervise.h
+ftrigw.h
+ftrigr.h
+s6lock.h

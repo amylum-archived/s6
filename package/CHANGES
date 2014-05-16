@@ -1,0 +1,83 @@
+20110628
+	version: 0.10
+20110702
+	bug: ftrigr_wait_or.c didn't compile on OpenBSD
+	  fix: added #include "error.h"
+	version: 0.11
+20110706
+	portability: OpenBSD doesn't like "stderr" in s6-log.c
+	  fix: replace "stderr" with "fd2"
+	version: 0.12
+20110727
+	internal: ported ftrigr_subscribe() to gensetdyn_new() interface
+	version: 0.13
+20110809
+	bug: ftrigw_notify used sig_ignore/sig_restore, which changed from 1 to 0 stack depth with skalibs-1.1.1
+	  fix: explicit use of skasigaction() instead
+	version: 0.14
+20120214
+	internal: all bools changed from unsigned char to int
+	ui: ftrigw_make_fifodir impacted
+	doc: reflected change
+20120220
+	version: 0.15
+20120310
+	doc: corrected 0.14/0.15 discrepancy in install.html (to 0.16 anyway)
+	code: updated s6-envdir
+	version: 0.16
+20120518
+	bug: s6-svok didn't work (testing argv[0] instead of argv[1])
+	  fix: argv++, argc--
+	internal: removed useless mallocs in s6-svok and s6-svstat code.
+20120612
+	version: 0.17
+20121215
+	bug: in some cases, s6-log busyloops over a processor
+	  fix: rotator() now guarantees the cooldown-on-failure
+20130123
+	internal: removed arbitrary MAXLOGDIRS limit in s6-log
+20130206
+	build: added more support for non-slashpackage installations
+	code: added ucspilogd
+20130212
+	version: 1.0.0
+20130715
+	code: added libs6lock
+	code: added -t option to setlock
+	doc: reflected changes
+	doc: corrected a few typos here and there
+20130913
+	internal: changed s6-log's ulongs to uints
+20130916
+	bug: s6-supervise was maintaining open fds after x
+	  impact: loggers didn't exit naturally
+	  fix: add fd_sanitize(), close fds on LASTUP/LASTFINISH
+	bug: badly timed killthem() in s6-svscan (on -n or -N)
+	  impact: s6-svscanctl -an didn't prune, needed -a then -n
+	  fix: don't killthem() on the spot, schedule it after the scan
+20130926
+	version: 1.1.0
+20131029
+	bug: s6-ftrigrd wasn't exported
+	  impact: on nosp, ftrigr_startf() could fail
+	  fix: export it
+20131105
+	version: 1.1.1
+20140323
+	bug: s6-log was enforcing at least 2 archive files
+	  fix: trivial
+	version: 1.1.2
+20140328
+	bug: s6-log busyloops when rotator fails
+	  cause: allreadwrite doesn't call op on empty buf!
+	  fix: move pre-flush rotation tests out of logdir_write
+	version: 1.1.3
+20140411
+	build: moved to 4-number versioning
+	deps: moved to skalibs-1.6.0.0, execline-1.3.1.1
+20140430
+	code: s6-setuidgid and s6-envuidgid now use gidlist
+	doc: updated
+	ui: s6-log prints a warning when initial taia_now fails
+20140514
+	version: 1.1.3.1

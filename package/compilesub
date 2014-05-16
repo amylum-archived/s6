@@ -1,0 +1,22 @@
+#!/bin/sh -e
+# Public domain.
+
+umask 022
+test -d package -a -d src -a -d conf-compile || { echo 'Wrong working directory.' ; exit 100 ; }
+
+s="$1"
+test -n "$s" || ( echo usage: compilesub subsys ; exit 100 )
+
+echo Making subsystem "$s"...
+
+cd "compile/$s"
+for i in `ls ../export` ; do
+  test -r "$i" || ln -s "../export/$i" .
+done
+make
+for i in `cat EXPORT-` ; do
+  rm -f "../export/$i"
+  ln -s "../$s/$i" ../export
+done
+echo Subsystem "$s" done.
+echo

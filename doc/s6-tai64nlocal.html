@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Language" content="en" />
+    <title>s6: the s6-tai64nlocal program</title>
+    <meta name="Description" content="s6: the s6-tai64nlocal program" />
+    <meta name="Keywords" content="s6 command s6-tai64nlocal filter timestamp TAI64 TAI64N human-readable date time" />
+    <!-- <link rel="stylesheet" type="text/css" href="http://www.skarnet.org/default.css" /> -->
+  </head>
+<body>
+
+<p>
+<a href="index.html">s6</a><br />
+<a href="http://www.skarnet.org/software/">Software</a><br />
+<a href="http://www.skarnet.org/">www.skarnet.org</a>
+</p>
+
+<h1> The s6-tai64nlocal program </h1>
+
+<p>
+s6-tai64nlocal acts as a filter, reading from stdin and writing to stdout.
+For every line that begins with a
+<a href="http://www.skarnet.org/software/skalibs/libstddjb/tai.html#timestamp">TAI64N
+timestamp</a>, it replaces this timestamp with a human-readable local date and
+time.
+</p>
+
+<h2> Interface </h2>
+
+<pre>
+     s6-tai64nlocal
+</pre>
+
+<ul>
+ <li> s6-tai64nlocal exits 0 when it sees the end of stdin. If there's an
+unfinished line, s6-tai64n processes it
+and writes it before exiting. </li>
+</ul>
+
+<h2> Notes </h2>
+
+<p>
+ s6-tai64nlocal does neither "line buffering" nor "block buffering". It does
+<em>optimal buffering</em>, i.e. it flushes its output buffer every time
+it risks blocking on input.
+</p>
+
+<h2> Troubleshooting </h2>
+
+<p>
+ If s6-tai64nlocal does not appear to give the correct local time:
+</p>
+
+<ul>
+ <li> Check the compilation options that were used for the
+<a href="http://www.skarnet.org/software/skalibs/">skalibs</a> libraries
+your s6-tai64nlocal program was linked against. In particular, check the
+<a href="http://www.skarnet.org/software/skalibs/flags.html#clockistai">clockistai</a> and
+<a href="http://www.skarnet.org/software/skalibs/flags.html#tzisright">tzisright</a> flags. </li>
+ <li> Compare these flags and their meanings with your current timezone. In particular,
+check <tt>/etc/localtime</tt>, <tt>/etc/timezone</tt>, <tt>/etc/TZ</tt>, and the TZ
+environment variable. </li>
+<li> Check that you have a correct and recent version of <tt>/etc/leapsecs.dat</tt>. </li>
+</ul>
+
+</body>
+</html>

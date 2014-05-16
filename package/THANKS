@@ -1,0 +1,26 @@
+Paul Jarc <prj@dogmap.org>
+Gerrit Pape <pape@smarden.org>
+Clemens Fischer <ino-waiting@gmx.net>
+ - co-designers of fifo-based checkpoints
+
+Stefan Karrman <sk@mathematik.uni-ulm.de>
+ - libftrig idea originator
+
+Jean Marot <marot@quatramaran.ens.fr>
+ - code debugging
+
+Dan J. Bernstein <djb@cr.yp.to>
+ - C/Unix mentor
+ 
+Wayne Marshall <wcm@b0llix.net>
+ - perp
+
+David Madore <david@madore.org>
+Nicolas George <cigaes@salle-s.org>
+ - intellectual challenges, criticism
+ 
+Frans Haarman <franshaarman@gmail.com>
+ - help with OpenBSD portability
+
+Vallo Kallaste <kalts@estpak.ee>
+ - bug-reports

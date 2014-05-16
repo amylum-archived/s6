@@ -1,0 +1,5 @@
+gcc -O2 -W -Wall -pipe -fomit-frame-pointer -fno-exceptions -fno-asynchronous-unwind-tables -fno-unwind-tables
+
+This will be used to compile .c files that are not meant to be part
+of a shared library (but may be used to make an executable that may
+be linked against a shared library).
