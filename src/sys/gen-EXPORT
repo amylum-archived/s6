@@ -11,6 +11,7 @@ if test -f EXPORT.header ; then
   cat < EXPORT.header
 fi
 
+mkdir -p deps-exe
 ls -1 deps-exe
 
 for file in `ls -1 deps-lib` ; do
