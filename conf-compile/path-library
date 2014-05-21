@@ -1,2 +1,2 @@
-$SP_ROOT/package/prog/skalibs/library
-$SP_ROOT/package/admin/execline/library
+/usr/lib/skalibs
+/usr/lib/execline

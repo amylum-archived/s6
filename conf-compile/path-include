@@ -1,2 +1,2 @@
-$SP_ROOT/package/prog/skalibs/include
-$SP_ROOT/package/admin/execline/include
+/usr/include/skalibs
+/usr/include/execline
