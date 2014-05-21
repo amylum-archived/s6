@@ -1,0 +1,6 @@
+.done
+.installed
+command/
+compile/
+include/
+library/
