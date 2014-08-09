@@ -60,7 +60,7 @@ depending on where you installed your skalibs sysdeps files,
 <h2> Programming </h2>
 
 <ul>
- <li> Check the <tt>/package/admin/s6/include/s6lock.h"</tt> header
+ <li> Check the <tt>/package/admin/s6/include/s6lock.h</tt> header
 for the prototypes. The functions documented here are
 often simplified macros, for instance relying on the STAMP global variable
 to hold the current time. Fully reentrant functions with more control
@@ -81,7 +81,7 @@ practices. </li>
 <h3> Starting and ending a session </h3>
 
 <pre>
-s6lock_t a  = S6LOCK_ZERO ;
+s6lock_t a = S6LOCK_ZERO ;
 struct taia deadline ;
 
 taia_now_g() ;
@@ -257,7 +257,7 @@ function returns -1 ETIMEDOUT.
 </p>
 
 <p>
-<code> int s6lock_wait_or_g (s6lock_t *a, uint16 const *idlist, unsigned int n, struct taia const *deadline) </code> <br />
+<code> int s6lock_wait_and_g (s6lock_t *a, uint16 const *idlist, unsigned int n, struct taia const *deadline) </code> <br />
 Synchronously waits for <em>all</em> of the locks represented by the array pointed to
 by <em>idlist</em> of length <em>n</em> to be acquired. Returns -1 if it fails and
 0 if it succeeds. If no result has been obtained by <em>deadline</em>, the

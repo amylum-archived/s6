@@ -81,3 +81,15 @@
 	ui: s6-log prints a warning when initial taia_now fails
 20140514
 	version: 1.1.3.1
+20140610
+	internal: ported s6-ftrigrd and s6-log to regex_t
+20140707
+        portability: npbg1 could trigger in s6_supervise_lock
+          fix: extend the lock coverage
+	bug: s6-svscan didn't kill processes when receiving -t
+          fix: trivial
+        internal: s6-svscan cleanup
+        bug: announce() called twice in up_d in s6-supervise
+          fix: trivial
+        code: added uid:gid format support in s6-setuidgid
+	version: 1.1.3.2

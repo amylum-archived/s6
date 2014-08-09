@@ -15,7 +15,7 @@ struct ftrig1_s
   int fdw ;
   stralloc name ;
 } ;
-#define FTRIG1_ZERO { -1, -1, STRALLOC_ZERO }
+#define FTRIG1_ZERO { .fd = -1, .fdw = -1, .name = STRALLOC_ZERO }
 
 extern int ftrig1_make (ftrig1_ref, char const *) ;
 extern void ftrig1_free (ftrig1_ref) ;

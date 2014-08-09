@@ -83,7 +83,7 @@ exportlibexec()
   echo "Copying unexported binaries to $libexec ..."
   for i in `cut -f1 < package/$1 | grep -vFf package/$1.exported` ; do
     rm -f "$libexec/$i"'{new}'
-    cp -P "$dir/$i" "$libexec/$i"'{new}'
+    cp -P "$1/$i" "$libexec/$i"'{new}'
     mv -f "$libexec/$i"'{new}' "$libexec/$i"
   done
 }

@@ -2,8 +2,10 @@
 
 #include <errno.h>
 #include <signal.h>
+#include <regex.h>
 #include "uint16.h"
 #include "uint32.h"
+#include "bytestr.h"
 #include "allreadwrite.h"
 #include "error.h"
 #include "strerr2.h"
@@ -16,10 +18,14 @@
 #include "djbunix.h"
 #include "iopause.h"
 #include "netstring.h"
-#include "sredfa.h"
 #include "skaclient.h"
 #include "ftrig1.h"
 #include "ftrigr.h"
+
+#define FTRIGRD_MAXREADS 32
+#define FTRIGRD_BUFSIZE 16
+
+#define dienomem() strerr_diefu1sys(111, "stralloc_catb")
 
 static bufalloc asyncout = BUFALLOC_ZERO ;
 
@@ -28,12 +34,14 @@ struct ftrigio_s
 {
   unsigned int xindex ;
   ftrig1 trig ;
-  struct sredfa *re ;
-  uint32 dfastate ;
+  buffer b ;
+  char buf[FTRIGRD_BUFSIZE] ;
+  regex_t re ;
+  stralloc sa ;
   uint32 options ;
   uint16 id ; /* given by client */
 } ;
-#define FTRIGIO_ZERO { 0, FTRIG1_ZERO, 0, SREDFA_START, 0, 0 }
+#define FTRIGIO_ZERO { .xindex = 0, .trig = FTRIG1_ZERO, .b = BUFFER_INIT(0, -1, 0, 0), .buf = "", .sa = STRALLOC_ZERO, .options = 0, .id = 0 }
 static ftrigio_t const fzero = FTRIGIO_ZERO ;
 
 static genalloc a = GENALLOC_ZERO ; /* array of ftrigio_t */
@@ -41,7 +49,8 @@ static genalloc a = GENALLOC_ZERO ; /* array of ftrigio_t */
 static void ftrigio_deepfree (ftrigio_t_ref p)
 {
   ftrig1_free(&p->trig) ;
-  sredfa_delete(p->re) ;
+  stralloc_free(&p->sa) ;
+  regfree(&p->re) ;
   *p = fzero ;
 }
 
@@ -79,6 +88,29 @@ static void remove (unsigned int i)
   ftrigio_deepfree(genalloc_s(ftrigio_t, &a) + i) ;
   genalloc_s(ftrigio_t, &a)[i] = genalloc_s(ftrigio_t, &a)[n] ;
   genalloc_setlen(ftrigio_t, &a, n) ;
+}
+
+static inline int ftrigio_read (ftrigio_t *p)
+{
+  unsigned int n = FTRIGRD_MAXREADS ;
+  while (n--)
+  {
+    regmatch_t pmatch ;
+    register int r = sanitize_read(buffer_fill(&p->b)) ;
+    if (!r) break ;
+    if (r < 0) return (trig(p->id, 'd', errno), 0) ;
+    if (!stralloc_catb(&p->sa, buffer_RPEEK(&p->b), buffer_len(&p->b))) dienomem() ;
+    buffer_RSEEK(&p->b, buffer_len(&p->b)) ;
+    if (!stralloc_readyplus(&p->sa, 1)) dienomem() ; p->sa.s[p->sa.len] = 0 ;
+    while (!regexec(&p->re, p->sa.s, 1, &pmatch, REG_NOTBOL | REG_NOTEOL))
+    {
+      trig(p->id, '!', p->sa.s[pmatch.rm_eo - 1]) ;
+      if (!(p->options & FTRIGR_REPEAT)) return 0 ;
+      byte_copy(p->sa.s, p->sa.len + 1 - pmatch.rm_eo, p->sa.s + pmatch.rm_eo) ;
+      p->sa.len -= pmatch.rm_eo ;
+    }
+  }
+  return 1 ;
 }
 
 int main (void)
@@ -146,34 +178,14 @@ int main (void)
     {
       register ftrigio_t_ref p = genalloc_s(ftrigio_t, &a) + i ;
       if (x[p->xindex].revents & IOPAUSE_READ)
-      {
-        char c ;
-        register int r = sanitize_read(fd_read(p->trig.fd, &c, 1)) ;
-        if (!r) continue ;
-        if (r < 0)
-        {
-          trig(p->id, 'd', errno) ;
-          remove(i--) ;
-        }
-        else if (!sredfa_feed(p->re, &p->dfastate, c))
-        {
-          trig(p->id, 'd', ENOEXEC) ;
-          remove(i--) ;
-        }
-        else if (p->dfastate & SREDFA_ACCEPT)
-        {
-          trig(p->id, '!', c) ;
-          if (p->options & FTRIGR_REPEAT)
-            p->dfastate = SREDFA_START ;
-          else remove(i--) ;
-        }
-      }
+        if (!ftrigio_read(p)) remove(i--) ;
     }
 
    /* client writing => get data and parse it */
     if (buffer_len(buffer_0small) || x[0].revents & IOPAUSE_READ)
     {
-      for (;;)
+      unsigned int n = FTRIGRD_MAXREADS ;
+      while (n--)
       {
         uint16 id ;
         register int r = netstring_get(buffer_0small, &indata, &instate) ;
@@ -224,16 +236,15 @@ int main (void)
               answer(errno) ;
               break ;
             }
-            f.re = sredfa_new() ;
-            if (!f.re)
+            r = regcomp(&f.re, indata.s + 16 + pathlen, REG_EXTENDED) ;
+            if (r)
             {
-              answer(errno) ;
+              answer(r == REG_ESPACE ? ENOMEM : EINVAL) ;
               break ;
             }
-            if (!sredfa_from_regexp(f.re, indata.s + 16 + pathlen)
-             || !ftrig1_make(&f.trig, indata.s + 15))
+            if (!ftrig1_make(&f.trig, indata.s + 15))
             {
-              sredfa_delete(f.re) ;
+              regfree(&f.re) ;
               answer(errno) ;
               break ;
             }

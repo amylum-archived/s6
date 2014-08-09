@@ -52,7 +52,7 @@ write to a slow file system. </li>
 exit when reading EOF on stdin. </li>
  <li> <tt>-t</tt>&nbsp;: timestamp. Prepends every log line that is written to
 a logging directory with a
-<a href="http://www.skarnet.org/software/skalibs/doc/libstddjb/tai.html">TAI64N</a>
+<a href="http://skarnet.org/software/skalibs/libstddjb/tai.html">TAI64N</a>
 timestamp.  </li>
  <li> <tt>-e</tt>&nbsp;: timestamp alerts. Prepends every "alert" line with a
 TAI64N timestamp. </li>
@@ -104,7 +104,7 @@ When <tt>current</tt> becomes too big, a <em>rotation</em> happens.
 The <tt>current</tt> file will be possibly <em>processed</em>, then
 it will become an <em>archived</em> log file named
 @<em>timestamp</em>.s, where <em>timestamp</em>, a
-<a href="http://www.skarnet.org/software/skalibs/tai.html">TAI64N</a>
+<a href="http://www.skarnet.org/software/skalibs/libstddjb/tai.html">TAI64N</a>
 timestamp, is the absolute time of the rotation. If there are too
 many archived log files in the logdir, the older ones are then
 suppressed. Logging then resumes, to a brand new <tt>current</tt>

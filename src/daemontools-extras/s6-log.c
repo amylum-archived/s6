@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <stdio.h>  /* for rename() */
 #include <stdlib.h>  /* for qsort() */
+#include <regex.h>
 #include "uint32.h"
 #include "uint64.h"
 #include "uint.h"
@@ -27,9 +28,9 @@
 #include "sig.h"
 #include "selfpipe.h"
 #include "environ.h"
-#include "sredfa.h"
 
 #define USAGE "s6-log [ -q | -v ] [ -b ] [ -p ] [ -t ] [ -e ] logging_script"
+#define dienomem() strerr_diefu1sys(111, "stralloc_catb")
 
 static int flagstampalert = 0 ;
 static int flagstamp = 0 ;
@@ -78,16 +79,15 @@ typedef struct sel_s sel_t, *sel_t_ref ;
 struct sel_s
 {
   seltype_t type ;
-  struct sredfa *dfa ;
+  regex_t re ;
 } ;
 
-#define SEL_ZERO { SELTYPE_PHAIL, 0 }
+#define SEL_ZERO { .type = SELTYPE_PHAIL }
 
 static void sel_free (sel_t_ref s)
 {
+  if (s->type != SELTYPE_DEFAULT) regfree(&s->re) ;
   s->type = SELTYPE_PHAIL ;
-  sredfa_delete(s->dfa) ;
-  s->dfa = 0 ;
 }
 
 typedef enum acttype_e acttype_t, *acttype_t_ref ;
@@ -728,7 +728,6 @@ static inline int script_init (genalloc *sc, char const *const *argv)
           flagacted = 0 ;
         }
         selitem.type = SELTYPE_DEFAULT ;
-        selitem.dfa = 0 ;
         if (!genalloc_append(sel_t, &cur_selections, &selitem)) return 0 ;
         break ;
       }
@@ -736,19 +735,16 @@ static inline int script_init (genalloc *sc, char const *const *argv)
       case '-' :
       {
         sel_t selitem ;
+        int r ;
         if (flagacted)
         {
           if (!script_update(sc, &cur_selections, &cur_actions)) return 0 ;
           flagacted = 0 ;
         }
         selitem.type = (**argv == '+') ? SELTYPE_PLUS : SELTYPE_MINUS ;
-        selitem.dfa = sredfa_new() ;
-        if (!selitem.dfa) return 0 ;
-        if (!sredfa_from_regexp(selitem.dfa, *argv + 1))
-        {
-          if (errno == EINVAL) goto fail ;
-          else return 0 ;
-        }
+        r = regcomp(&selitem.re, *argv+1, REG_EXTENDED | REG_NOSUB | REG_NEWLINE) ;
+        if (r == REG_ESPACE) return (errno = ENOMEM, 0) ;
+        if (r) goto fail ;
         if (!genalloc_append(sel_t, &cur_selections, &selitem)) return 0 ;
         break ;
       }
@@ -914,10 +910,10 @@ static inline void doit (scriptelem_t const *se, unsigned int n, char const *s, 
           flagselected = !flagacted ;
           break ;
         case SELTYPE_PLUS :
-	  if (!flagselected && sredfa_match(sels[j].dfa, flagstamp ? s+TIMESTAMP+1 : s, flagstamp ? len-TIMESTAMP-1 : len)) flagselected = 1 ;
+	  if (!flagselected && !regexec(&sels[j].re, flagstamp ? s+TIMESTAMP+1 : s, 0, 0, 0)) flagselected = 1 ;
           break ;
         case SELTYPE_MINUS :
-	  if (flagselected && sredfa_match(sels[j].dfa, flagstamp ? s+TIMESTAMP+1 : s, flagstamp ? len-TIMESTAMP-1 : len)) flagselected = 0 ;
+	  if (flagselected && !regexec(&sels[j].re, flagstamp ? s+TIMESTAMP+1 : s, 0, 0, 0)) flagselected = 0 ;
           break ;
         default :
           strerr_dief2x(101, "internal consistency error in ", "selection type") ;
@@ -981,6 +977,7 @@ static void prepare_to_exit (void)
 static void stampanddoit (scriptelem_t const *se, unsigned int n)
 {
   if (flagstamp) indata.s[timestamp_g(indata.s)] = ' ' ;
+  indata.s[indata.len] = 0 ;
   doit(se, n, indata.s, indata.len-1) ;
   indata.len = flagstamp ? TIMESTAMP+1 : 0 ;
 }
@@ -1029,7 +1026,7 @@ static void last_stdin (scriptelem_t const *se, unsigned int selen)
         }
         c = '\n' ;
       case 1 :
-        if (!stralloc_catb(&indata, &c, 1)) strerr_diefu1sys(111, "stralloc_catb") ;
+        if (!stralloc_catb(&indata, &c, 1)) dienomem() ;
         if (c == '\n')
         {
           stampanddoit(se, selen) ;
@@ -1180,10 +1177,8 @@ int main (int argc, char const *const *argv)
     if (flagstamp)
     {
       char fmt[TIMESTAMP+1] ;
-      if (!stralloc_catb(&indata, fmt, TIMESTAMP+1))
-        strerr_diefu1sys(111, "stralloc_catb") ;
-      if (!r)
-        strerr_warnwu1sys("read current time - timestamps may be wrong for a while") ;
+      if (!stralloc_catb(&indata, fmt, TIMESTAMP+1)) dienomem() ;
+      if (!r) strerr_warnwu1sys("read current time - timestamps may be wrong for a while") ;
     }
   }
   if (!script_init(&logscript, argv)) strerr_diefu1sys(111, "initialize logging script") ;
@@ -1249,7 +1244,7 @@ int main (int argc, char const *const *argv)
             prepare_to_exit() ;
             if (indata.len > (flagstamp ? TIMESTAMP+1 : 0))
             {
-              if (!stralloc_catb(&indata, "\n", 1)) strerr_diefu1sys(111, "stralloc_catb") ;
+              if (!stralloc_0(&indata)) dienomem() ;
               stampanddoit(genalloc_s(scriptelem_t, &logscript), genalloc_len(scriptelem_t, &logscript)) ;
             }
           }

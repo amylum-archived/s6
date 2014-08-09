@@ -285,7 +285,6 @@ static void up_d (void)
   status.flagwantup = 0 ;
   killt() ;
   killc() ;
-  announce() ;
 }
 
 static void up_u (void)

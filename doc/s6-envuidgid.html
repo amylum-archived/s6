@@ -43,10 +43,14 @@ primary group, GIDLIST is still set, but empty.) </li>
 <h2> Notes </h2>
 
 <p>
- s6-envuidgid behaves exactly like
-<a href="http://cr.yp.to/daemontools/envuidgid.html">envuidgid</a> except for the
-exit code if <em>account</em> does not exist.
+ s6-envuidgid behaves like
+<a href="http://cr.yp.to/daemontools/envuidgid.html">envuidgid</a>, except that:
 </p>
+
+<ul>
+ <li> it also handles supplementary groups </li>
+ <li> It exits 1 if <em>account</em> does not exist. </li>
+</ul>
 
 <p>
  s6-envuidgid is useful when running a program that must start as root but can

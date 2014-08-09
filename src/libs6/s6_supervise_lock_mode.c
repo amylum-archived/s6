@@ -42,10 +42,10 @@ int s6_supervise_lock_mode (char const *subdir, unsigned int subdirmode, unsigne
   fdctl = open_read(control) ;
   if (fdctl < 0)
     strerr_diefu2sys(111, "open_read ", control) ;
-  fd_close(fdlock) ;
   fdctlw = open_write(control) ;
   if (fdctlw < 0)
     strerr_diefu2sys(111, "open_write ", control) ;
+  fd_close(fdlock) ;
   if ((coe(fdctlw) < 0) || (coe(fdctl) < 0))
     strerr_diefu2sys(111, "coe ", control) ;
 

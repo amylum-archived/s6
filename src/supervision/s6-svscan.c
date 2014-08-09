@@ -21,19 +21,13 @@
 #include "s6-config.h"
 #include "s6-supervise.h"
 
-#define USAGE "s6-svscan [ -t timeout ] [ dir ]"
+#define USAGE "s6-svscan [ -c maxservices ] [ -t timeout ] [ dir ]"
 
 #define FINISH_PROG S6_SVSCAN_CTLDIR "/finish"
 #define CRASH_PROG S6_SVSCAN_CTLDIR "/crash"
 
 #define DIR_RETRY_TIMEOUT 3
 #define CHECK_RETRY_TIMEOUT 4
-#define MAXSERVICES 500
-
-#define KILLMODE_NOKILL 0x01
-#define KILLMODE_ACTIVE 0x02
-#define KILLMODE_SERVICES 0x04
-#define KILLMODE_LOGGERS 0x08
 
 struct svinfo
 {
@@ -47,16 +41,15 @@ struct svinfo
 } ;
 #define SVINFO_ZERO { -1, -1, { TAIA_ZERO, TAIA_ZERO }, { 0, 0 }, { -1, -1 }, 0, 0, 0 } ;
 
-static struct svinfo services[MAXSERVICES] ;
-
+static struct svinfo *services ;
+static unsigned int max = 500 ;
 static unsigned int n = 0 ;
 static struct taia deadline, defaulttimeout ;
 static char const *finish_arg = "reboot" ;
 static int wantreap = 1 ;
 static int wantscan = 1 ;
-static int wantkill = 0 ;
+static unsigned int wantkill = 0 ;
 static int cont = 1 ;
-static unsigned int killmode = 0 ;
 
 static void panicnosp (char const *) gccattr_noreturn ;
 static void panicnosp (char const *errmsg)
@@ -82,16 +75,39 @@ static void killthem (void)
 {
   register unsigned int i = 0 ;
   if (!wantkill) return ;
-  wantkill = 0 ;
   for (; i < n ; i++)
   {
-    if (!(killmode & KILLMODE_ACTIVE) && services[i].flagactive)
-      continue ;
+    if (!(wantkill & 1) && services[i].flagactive) continue ;
     if (services[i].pid[0])
-      kill(services[i].pid[0], (killmode & KILLMODE_SERVICES) ? SIGTERM : SIGHUP) ;
+      kill(services[i].pid[0], (wantkill & 2) ? SIGTERM : SIGHUP) ;
     if (services[i].flaglog && services[i].pid[1])
-      kill(services[i].pid[1], (killmode & KILLMODE_LOGGERS) ? SIGTERM : SIGHUP) ;
+      kill(services[i].pid[1], (wantkill & 4) ? SIGTERM : SIGHUP) ;
   }
+  wantkill = 0 ;
+}
+
+static void term (void)
+{
+  cont = 0 ;
+  wantkill = 3 ;
+}
+
+static void hup (void)
+{
+  cont = 0 ;
+  wantkill = 1 ;
+}
+
+static void quit (void)
+{
+  cont = 0 ;
+  wantkill = 7 ;
+}
+
+static void intr (void)
+{
+  finish_arg = "reboot" ;
+  term() ;
 }
 
 static void handle_signals (void)
@@ -104,11 +120,11 @@ static void handle_signals (void)
       case 0 : return ;
       case SIGCHLD : wantreap = 1 ; break ;
       case SIGALRM : wantscan = 1 ; break ;
-      case SIGTERM : cont = 0 ; wantkill = 1 ; killmode = KILLMODE_ACTIVE | KILLMODE_SERVICES ; break ;
-      case SIGHUP : cont = 0 ; wantkill = 1 ; killmode = KILLMODE_ACTIVE ; break ;
-      case SIGQUIT : cont = 0 ; wantkill = 1 ; killmode = KILLMODE_ACTIVE | KILLMODE_SERVICES | KILLMODE_LOGGERS ; break ;
+      case SIGTERM : term() ; break ;
+      case SIGHUP : hup() ; break ;
+      case SIGQUIT : quit() ; break ;
       case SIGABRT : cont = 0 ; break ;
-      case SIGINT : cont = 0 ; wantkill = 1 ; killmode = KILLMODE_ACTIVE | KILLMODE_SERVICES ; finish_arg = "reboot" ; break ;
+      case SIGINT : intr() ; break ;
     }
   }
 }
@@ -124,21 +140,21 @@ static void handle_control (int fd)
     else switch (c)
     {
       case 'p' : finish_arg = "poweroff" ; break ;
-      case 'h' : cont = 0 ; wantkill = 1 ; killmode = KILLMODE_ACTIVE ; return ;
+      case 'h' : hup() ; return ;
       case 'r' : finish_arg = "reboot" ; break ;
       case 'a' : wantscan = 1 ; break ;
-      case 't' : cont = 0 ; killmode = KILLMODE_ACTIVE | KILLMODE_SERVICES ; return ;
+      case 't' : term() ; return ;
       case 's' : finish_arg = "halt" ; break ;
       case 'z' : wantreap = 1 ; break ;
       case 'b' : cont = 0 ; return ;
-      case 'n' : wantkill = 1 ; killmode = KILLMODE_SERVICES ; break ;
-      case 'N' : wantkill = 1 ; killmode = KILLMODE_SERVICES | KILLMODE_LOGGERS ; break ;
-      case 'i' : cont = 0 ; wantkill = 1 ; killmode = KILLMODE_ACTIVE | KILLMODE_SERVICES ; finish_arg = "reboot" ; return ;
-      case 'q' : cont = 0 ; wantkill = 1 ; killmode = KILLMODE_ACTIVE | KILLMODE_SERVICES | KILLMODE_LOGGERS ; return ;
-      case '0' : cont = 0 ; wantkill = 1 ; killmode = KILLMODE_ACTIVE | KILLMODE_SERVICES ; finish_arg = "halt" ; return ;
-      case '6' : cont = 0 ; wantkill = 1 ; killmode = KILLMODE_ACTIVE | KILLMODE_SERVICES ; finish_arg = "reboot" ; return ;
-      case '7' : cont = 0 ; wantkill = 1 ; killmode = KILLMODE_ACTIVE | KILLMODE_SERVICES ; finish_arg = "poweroff" ; return ;
-      case '8' : cont = 0 ; wantkill = 1 ; killmode = KILLMODE_ACTIVE | KILLMODE_SERVICES ; finish_arg = "other" ; return ;
+      case 'n' : wantkill = 2 ; break ;
+      case 'N' : wantkill = 6 ; break ;
+      case '6' :
+      case 'i' : intr() ; return ;
+      case 'q' : quit() ; return ;
+      case '0' : finish_arg = "halt" ; term() ; return ;
+      case '7' : finish_arg = "poweroff" ; term() ; return ;
+      case '8' : finish_arg = "other" ; term() ; return ;
       default :
       {
         char s[2] = { c, 0 } ;
@@ -287,7 +303,7 @@ static void check (char const *name)
   }
   else
   {
-    if (n >= MAXSERVICES)
+    if (n >= max)
     {
       strerr_warnwu3x("start supervisor for ", name, ": too many services") ;
       return ;
@@ -394,17 +410,19 @@ int main (int argc, char const *const *argv)
     unsigned int t = 5000 ;
     for (;;)
     {
-      register int opt = subgetopt_r(argc, argv, "t:", &l) ;
+      register int opt = subgetopt_r(argc, argv, "t:c:", &l) ;
       if (opt == -1) break ;
       switch (opt)
       {
         case 't' : if (uint0_scan(l.arg, &t)) break ;
+        case 'c' : if (uint0_scan(l.arg, &max)) break ;
         default : strerr_dieusage(100, USAGE) ;
       }
     }
+    argc -= l.ind ; argv += l.ind ;
     if (t) taia_from_millisecs(&defaulttimeout, t) ;
     else defaulttimeout = infinitetto ;
-    argc -= l.ind ; argv += l.ind ;
+    if (max < 2) max = 2 ;
   }
 
   /* Init phase.
@@ -432,41 +450,46 @@ int main (int argc, char const *const *argv)
     if (selfpipe_trapset(&set) < 0) strerr_diefu1sys(111, "trap signals") ;
   }
 
-  taia_now_g() ;
 
-
-  /* Loop phase.
-     From now on, we must not die.
-     Temporize on recoverable errors, and panic on serious ones. */
-
-  while (cont)
   {
-    int r ;
-    taia_add_g(&deadline, &defaulttimeout) ;
-    reap() ;
-    scan() ;
-    killthem() ;
-    r = iopause_g(x, 2, &deadline) ;
-    if (r < 0) panic("iopause") ;
-    else if (!r) wantscan = 1 ;
-    else
+    struct svinfo blob[max] ; /* careful with that stack, Eugene */
+    services = blob ;
+    taia_now_g() ;
+
+
+    /* Loop phase.
+       From now on, we must not die.
+       Temporize on recoverable errors, and panic on serious ones. */
+
+    while (cont)
     {
-      if ((x[0].revents | x[1].revents) & IOPAUSE_EXCEPT)
+      int r ;
+      taia_add_g(&deadline, &defaulttimeout) ;
+      reap() ;
+      scan() ;
+      killthem() ;
+      r = iopause_g(x, 2, &deadline) ;
+      if (r < 0) panic("iopause") ;
+      else if (!r) wantscan = 1 ;
+      else
       {
-        errno = EIO ;
-        panic("check internal pipes") ;
+        if ((x[0].revents | x[1].revents) & IOPAUSE_EXCEPT)
+        {
+          errno = EIO ;
+          panic("check internal pipes") ;
+        }
+        if (x[0].revents & IOPAUSE_READ) handle_signals() ;
+        if (x[1].revents & IOPAUSE_READ) handle_control(x[1].fd) ;
       }
-      if (x[0].revents & IOPAUSE_READ) handle_signals() ;
-      if (x[1].revents & IOPAUSE_READ) handle_control(x[1].fd) ;
     }
+
+
+    /* Finish phase. */
+
+    selfpipe_finish() ;
+    killthem() ;
+    reap() ;
   }
-
-
-  /* Finish phase. */
-
-  selfpipe_finish() ;
-  killthem() ;
-  reap() ;
   {
     char const *eargv[3] = { FINISH_PROG, finish_arg, 0 } ;
     execve(eargv[0], (char **)eargv, (char *const *)environ) ;

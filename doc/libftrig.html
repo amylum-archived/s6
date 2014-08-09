@@ -94,15 +94,15 @@ if mixing signals with an event loop). Unfortunately, Unix signals, even the mor
 recent and powerful real-time Posix signals, have important limitations when it's
 about generic notification:
  <ul>
-  <li> non-root processes can only send signals to a very restricted and implementation-
-dependent set of processes (roughly, processes with the same UID). This is a problem when
+  <li> non-root processes can only send signals to a very restricted and
+implementation-dependent set of processes (roughly, processes with the same UID). This is a problem when
 designing secure programs that make use of the Unix privilege separation. </li>
   <li> you need to know the PID of a process to send it signals. This is generally
 impractical; process management systems that do not use supervisor processes have
 to do exactly that, and they resort to unreliable, ugly hacks (.pid files) to track
 down process PIDs. </li>
  </ul> </li>
- <li> BSD-style IPCs, i.e. file descriptors to perform a select()/poll() system
+ <li> BSD-style IPCs, i.e. file descriptors to perform select()/poll() system
 calls on, in an <em>asynchronous event loop</em>. This mechanism is very widely used,
 and rightly so, because it's extremely generic and works in every ordinary situation;
 you have to be doing <a href="http://www.kegel.com/c10k.html">very specific stuff</a>
@@ -110,7 +110,7 @@ to reach its limits. If process A is reading on
 fd <em>f</em>, it is notified everytime another process makes <em>f</em> readable -
 for instance by writing a byte to the other end if <em>f</em> is the reading end
 of a pipe. And indeed, this is how libftrig works internally; but libftrig is needed
-because direct use of BSD-style IPCs also have limitations.
+because direct use of BSD-style IPCs also has limitations.
  <ul>
   <li> Anonymous pipes are the simplest and most common BSD-style IPC. If there is a
 pipe from process B to process A, then B can notify A by writing to the pipe. The
