@@ -80,3 +80,16 @@ index eb1126a..0f7c6a1 100644
 -$SP_ROOT/package/admin/execline/library.so
 +/tmp/skalibs/usr/lib
 +/tmp/execline/usr/lib
+diff --git a/Makefile b/Makefile
+index 5e1fab5..c132eb2 100644
+--- a/Makefile
++++ b/Makefile
+@@ -6,7 +6,7 @@ install: .done .installed
+ 	@test -d package && package/compile && : > .done
+ 
+ .installed:
+-	@test -d package && package/export && package/upgrade && package/run && : > .installed
++	@test -d package && package/export && : > .installed
+ 
+ clean:
+ 	@test -d package && rm -rf compile .done .installed
