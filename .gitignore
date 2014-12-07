@@ -1,6 +1,4 @@
-.done
-.installed
-command/
-compile/
-include/
-library/
+.github
+s6.tar.gz
+skalibs.tar.gz
+execline.tar.gz
