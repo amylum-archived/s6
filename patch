@@ -4,42 +4,42 @@ index 5e56e04..87935d9 100644
 +++ b/conf-compile/conf-install-command
 @@ -1 +1 @@
 -/bin
-+/tmp/s6/bin
++/tmp/s6-release/bin
 diff --git a/conf-compile/conf-install-include b/conf-compile/conf-install-include
 index f3f1d6c..038a7d2 100644
 --- a/conf-compile/conf-install-include
 +++ b/conf-compile/conf-install-include
 @@ -1 +1 @@
 -/usr/include/s6
-+/tmp/s6/usr/include/s6
++/tmp/s6-release/usr/include/s6
 diff --git a/conf-compile/conf-install-libexec b/conf-compile/conf-install-libexec
 index f5da26d..89ea0f9 100644
 --- a/conf-compile/conf-install-libexec
 +++ b/conf-compile/conf-install-libexec
 @@ -1 +1 @@
 -/usr/libexec
-+/tmp/s6/usr/libexec
++/tmp/s6-release/usr/libexec
 diff --git a/conf-compile/conf-install-library b/conf-compile/conf-install-library
 index 7d2992f..db0e66f 100644
 --- a/conf-compile/conf-install-library
 +++ b/conf-compile/conf-install-library
 @@ -1 +1 @@
 -/usr/lib/s6
-+/tmp/s6/usr/lib/s6
++/tmp/s6-release/usr/lib/s6
 diff --git a/conf-compile/conf-install-library.so b/conf-compile/conf-install-library.so
 index 502167f..9290cf3 100644
 --- a/conf-compile/conf-install-library.so
 +++ b/conf-compile/conf-install-library.so
 @@ -1 +1 @@
 -/lib
-+/tmp/s6/lib
++/tmp/s6-release/lib
 diff --git a/conf-compile/conf-install-sysdeps b/conf-compile/conf-install-sysdeps
 index 04b4384..1394bcf 100644
 --- a/conf-compile/conf-install-sysdeps
 +++ b/conf-compile/conf-install-sysdeps
 @@ -1 +1 @@
 -/usr/lib/s6/sysdeps
-+/tmp/s6/usr/lib/s6/sysdeps
++/tmp/s6-release/usr/lib/s6/sysdeps
 diff --git a/conf-compile/flag-allstatic b/conf-compile/flag-allstatic
 new file mode 100644
 index 0000000..e69de29
