@@ -3,17 +3,21 @@ BUILD_DIR = /tmp/$(PACKAGE)-build
 RELEASE_DIR = /tmp/$(PACKAGE)-release
 RELEASE_FILE = $(PACKAGE).tar.gz
 
-SKALIBS_VERSION = 1.6.0.0
+PACKAGE_VERSION = $$(cat upstream/package/version)
+PATCH_VERSION = $$(cat version)
+VERSION = $(PACKAGE_VERSION)-$(PATCH_VERSION)
+
+SKALIBS_VERSION = 1.6.0.0-1
 SKALIBS_URL = https://github.com/akerl/skalibs/releases/download/$(SKALIBS_VERSION)/skalibs.tar.gz
 SKALIBS_TAR = skalibs.tar.gz
 SKALIBS_DIR = /tmp/skalibs
 
-EXECLINE_VERSION = 1.3.1.1
+EXECLINE_VERSION = 1.3.1.1-1
 EXECLINE_URL = https://github.com/akerl/execline/releases/download/$(EXECLINE_VERSION)/execline.tar.gz
 EXECLINE_TAR = execline.tar.gz
 EXECLINE_DIR = /tmp/execline
 
-.PHONY : default manual container build push local
+.PHONY : default manual container deps version build push local
 
 default: container
 
@@ -38,13 +42,15 @@ build: deps
 	make -C $(BUILD_DIR) install
 	tar -czv -C $(RELEASE_DIR) -f $(RELEASE_FILE) .
 
-push:
-	git commit -am "$$(cat upstream/package/version)" || true
+version:
+	@echo $$(($(PATCH_VERSION) + 1)) > version
+
+push: version
+	git commit -am "$(VERSION)"
 	ssh -oStrictHostKeyChecking=no git@github.com &>/dev/null || true
-	git tag -f "$$(cat upstream/package/version)"
-	git push origin :"$$(cat upstream/package/version)" || true
+	git tag -f "$(VERSION)"
 	git push --tags origin master
-	targit -a .github -c -f akerl/s6 $$(cat upstream/package/version) $(RELEASE_FILE)
+	targit -a .github -c -f akerl/s6 $(VERSION) $(RELEASE_FILE)
 
 local: build push
 
