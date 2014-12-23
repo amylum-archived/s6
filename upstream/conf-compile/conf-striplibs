@@ -1,6 +1,0 @@
-strip -x -R .note -R .comment -R .note.GNU-stack
-
-This will be used to strip library files (.a)
-If you have a BSD strip, you can use: strip -x
-If you have a GNU strip, you can use: strip -x -R .note -R .comment -R .note.GNU-stack
-Otherwise, leave blank.
