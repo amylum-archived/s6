@@ -1,25 +1,24 @@
 PACKAGE = s6
 BUILD_DIR = /tmp/$(PACKAGE)-build
 RELEASE_DIR = /tmp/$(PACKAGE)-release
-RELEASE_FILE = $(PACKAGE).tar.gz
+RELEASE_FILE = /tmp/$(PACKAGE).tar.gz
 
-PACKAGE_VERSION = $$(cat upstream/package/version)
+PACKAGE_VERSION = $$(awk -F= '/^version/ {print $$2}' upstream/package/info)
 PATCH_VERSION = $$(cat version)
 VERSION = $(PACKAGE_VERSION)-$(PATCH_VERSION)
 
-SKALIBS_VERSION = 1.6.0.0-1
+SKALIBS_VERSION = 2.0.0.0-9
 SKALIBS_URL = https://github.com/akerl/skalibs/releases/download/$(SKALIBS_VERSION)/skalibs.tar.gz
 SKALIBS_TAR = skalibs.tar.gz
 SKALIBS_DIR = /tmp/skalibs
-
-EXECLINE_VERSION = 1.3.1.1-1
-EXECLINE_URL = https://github.com/akerl/execline/releases/download/$(EXECLINE_VERSION)/execline.tar.gz
-EXECLINE_TAR = execline.tar.gz
-EXECLINE_DIR = /tmp/execline
+SKALIBS_PATH = --with-sysdeps=$(SKALIBS_DIR)/usr/lib/skalibs/sysdeps --with-lib=$(SKALIBS_DIR)/usr/lib/skalibs --with-include=$(SKALIBS_DIR)/usr/include --with-dynlib=$(SKALIBS_DIR)/usr/lib
 
 .PHONY : default manual container deps version build push local
 
-default: container
+default: upstream/Makefile container
+
+upstream/Makefile:
+	git submodule update --init
 
 manual:
 	./meta/launch /bin/bash || true
@@ -28,19 +27,18 @@ container:
 	./meta/launch
 
 deps:
-	rm -rf $(SKALIBS_DIR) $(EXECLINE_DIR) $(SKALIBS_TAR) $(EXECLINE_TAR)
-	mkdir $(SKALIBS_DIR) $(EXECLINE_DIR)
+	rm -rf $(SKALIBS_DIR) $(SKALIBS_TAR)
+	mkdir $(SKALIBS_DIR)
 	curl -sLo $(SKALIBS_TAR) $(SKALIBS_URL)
 	tar -x -C $(SKALIBS_DIR) -f $(SKALIBS_TAR)
-	curl -sLo $(EXECLINE_TAR) $(EXECLINE_URL)
-	tar -x -C $(EXECLINE_DIR) -f $(EXECLINE_TAR)
 
 build: deps
 	rm -rf $(BUILD_DIR)
 	cp -R upstream $(BUILD_DIR)
-	patch -d $(BUILD_DIR) -p1 < patch
+	cd $(BUILD_DIR) && ./configure --prefix=$(RELEASE_DIR) $(CONF_FLAGS) $(SKALIBS_PATH)
+	make -C $(BUILD_DIR)
 	make -C $(BUILD_DIR) install
-	tar -czv -C $(RELEASE_DIR) -f $(RELEASE_FILE) .
+	cd $(RELEASE_DIR) && tar -czvf $(RELEASE_FILE) *
 
 version:
 	@echo $$(($(PATCH_VERSION) + 1)) > version
