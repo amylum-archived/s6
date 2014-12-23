@@ -13,6 +13,12 @@ SKALIBS_TAR = skalibs.tar.gz
 SKALIBS_DIR = /tmp/skalibs
 SKALIBS_PATH = --with-sysdeps=$(SKALIBS_DIR)/usr/lib/skalibs/sysdeps --with-lib=$(SKALIBS_DIR)/usr/lib/skalibs --with-include=$(SKALIBS_DIR)/usr/include --with-dynlib=$(SKALIBS_DIR)/usr/lib
 
+EXECLINE_VERSION = 2.0.0.0-3
+EXECLINE_URL = https://github.com/akerl/execline/releases/download/$(EXECLINE_VERSION)/execline.tar.gz
+EXECLINE_TAR = execline.tar.gz
+EXECLINE_DIR = /tmp/execline
+EXECLINE_PATH = --with-lib=$(EXECLINE_DIR)/usr/lib/execline --with-include=$(EXECLINE_DIR)/usr/include --with-dynlib=$(EXECLINE_DIR)/usr/lib
+
 .PHONY : default manual container deps version build push local
 
 default: upstream/Makefile container
@@ -27,15 +33,17 @@ container:
 	./meta/launch
 
 deps:
-	rm -rf $(SKALIBS_DIR) $(SKALIBS_TAR)
-	mkdir $(SKALIBS_DIR)
+	rm -rf $(SKALIBS_DIR) $(EXECLINE_DIR) $(SKALIBS_TAR) $(EXECLINE_TAR)
+	mkdir $(SKALIBS_DIR) $(EXECLINE_DIR)
 	curl -sLo $(SKALIBS_TAR) $(SKALIBS_URL)
 	tar -x -C $(SKALIBS_DIR) -f $(SKALIBS_TAR)
+	curl -sLo $(EXECLINE_TAR) $(EXECLINE_URL)
+	tar -x -C $(EXECLINE_DIR) -f $(EXECLINE_TAR)
 
 build: deps
 	rm -rf $(BUILD_DIR)
 	cp -R upstream $(BUILD_DIR)
-	cd $(BUILD_DIR) && ./configure --prefix=$(RELEASE_DIR) $(CONF_FLAGS) $(SKALIBS_PATH)
+	cd $(BUILD_DIR) && ./configure --prefix=$(RELEASE_DIR) $(CONF_FLAGS) $(SKALIBS_PATH) $(EXECLINE_PATH)
 	make -C $(BUILD_DIR)
 	make -C $(BUILD_DIR) install
 	cd $(RELEASE_DIR) && tar -czvf $(RELEASE_FILE) *
