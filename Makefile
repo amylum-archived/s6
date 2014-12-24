@@ -7,13 +7,13 @@ PACKAGE_VERSION = $$(awk -F= '/^version/ {print $$2}' upstream/package/info)
 PATCH_VERSION = $$(cat version)
 VERSION = $(PACKAGE_VERSION)-$(PATCH_VERSION)
 
-SKALIBS_VERSION = 2.0.0.0-9
+SKALIBS_VERSION = 2.0.0.0-10
 SKALIBS_URL = https://github.com/akerl/skalibs/releases/download/$(SKALIBS_VERSION)/skalibs.tar.gz
 SKALIBS_TAR = skalibs.tar.gz
 SKALIBS_DIR = /tmp/skalibs
 SKALIBS_PATH = --with-sysdeps=$(SKALIBS_DIR)/usr/lib/skalibs/sysdeps --with-lib=$(SKALIBS_DIR)/usr/lib/skalibs --with-include=$(SKALIBS_DIR)/usr/include --with-dynlib=$(SKALIBS_DIR)/usr/lib
 
-EXECLINE_VERSION = 2.0.0.0-3
+EXECLINE_VERSION = 2.0.0.0-4
 EXECLINE_URL = https://github.com/akerl/execline/releases/download/$(EXECLINE_VERSION)/execline.tar.gz
 EXECLINE_TAR = execline.tar.gz
 EXECLINE_DIR = /tmp/execline
