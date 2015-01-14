@@ -7,6 +7,8 @@ RELEASE_FILE = /tmp/$(PACKAGE).tar.gz
 PACKAGE_VERSION = $$(awk -F= '/^version/ {print $$2}' upstream/package/info)
 PATCH_VERSION = $$(cat version)
 VERSION = $(PACKAGE_VERSION)-$(PATCH_VERSION)
+CONF_FLAGS = --enable-allstatic --disable-shared --enable-static --enable-static-libc
+PATH_FLAGS = --prefix=$(RELEASE_DIR) --exec-prefix=$(RELEASE_DIR)/usr --libdir=$(RELEASE_DIR)/usr/lib/s6 --includedir=$(RELEASE_DIR)/usr/include
 
 SKALIBS_VERSION = 2.2.0.0-14
 SKALIBS_URL = https://github.com/amylum/skalibs/releases/download/$(SKALIBS_VERSION)/skalibs.tar.gz
@@ -18,7 +20,7 @@ EXECLINE_VERSION = 2.0.1.1-7
 EXECLINE_URL = https://github.com/amylum/execline/releases/download/$(EXECLINE_VERSION)/execline.tar.gz
 EXECLINE_TAR = execline.tar.gz
 EXECLINE_DIR = /tmp/execline
-EXECLINE_PATH = --with-lib=$(EXECLINE_DIR)/usr/lib/execline --with-include=$(EXECLINE_DIR)/usr/include --with-dynlib=$(EXECLINE_DIR)/usr/lib
+EXECLINE_PATH = --with-lib=$(EXECLINE_DIR)/usr/lib/execline --with-include=$(EXECLINE_DIR)/usr/include --with-lib=$(EXECLINE_DIR)/usr/lib
 
 .PHONY : default manual container deps version build push local
 
@@ -44,7 +46,7 @@ deps:
 build: deps
 	rm -rf $(BUILD_DIR)
 	cp -R upstream $(BUILD_DIR)
-	cd $(BUILD_DIR) && CC="musl-gcc" ./configure --prefix=$(RELEASE_DIR) $(CONF_FLAGS) $(SKALIBS_PATH) $(EXECLINE_PATH)
+	cd $(BUILD_DIR) && CC="musl-gcc" ./configure $(CONF_FLAGS) $(PATH_FLAGS) $(SKALIBS_PATH) $(EXECLINE_PATH)
 	make -C $(BUILD_DIR)
 	make -C $(BUILD_DIR) install
 	cd $(RELEASE_DIR) && tar -czvf $(RELEASE_FILE) *
