@@ -10,7 +10,7 @@ VERSION = $(PACKAGE_VERSION)-$(PATCH_VERSION)
 CONF_FLAGS = --enable-allstatic --disable-shared --enable-static --enable-static-libc
 PATH_FLAGS = --prefix=$(RELEASE_DIR) --exec-prefix=$(RELEASE_DIR)/usr --libdir=$(RELEASE_DIR)/usr/lib/s6 --includedir=$(RELEASE_DIR)/usr/include
 
-SKALIBS_VERSION = 2.2.1.0-16
+SKALIBS_VERSION = 2.3.0.0-18
 SKALIBS_URL = https://github.com/amylum/skalibs/releases/download/$(SKALIBS_VERSION)/skalibs.tar.gz
 SKALIBS_TAR = skalibs.tar.gz
 SKALIBS_DIR = /tmp/skalibs
