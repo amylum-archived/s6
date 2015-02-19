@@ -46,7 +46,7 @@ deps:
 build: deps
 	rm -rf $(BUILD_DIR)
 	cp -R upstream $(BUILD_DIR)
-	sed -i 's/0700/0755/' $(BUILD_DIR)/packages/modes
+	sed -i 's/0700/0755/' $(BUILD_DIR)/package/modes
 	cd $(BUILD_DIR) && CC="musl-gcc" ./configure $(CONF_FLAGS) $(PATH_FLAGS) $(SKALIBS_PATH) $(EXECLINE_PATH)
 	make -C $(BUILD_DIR)
 	make -C $(BUILD_DIR) install
