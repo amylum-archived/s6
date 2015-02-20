@@ -22,14 +22,14 @@ EXECLINE_TAR = execline.tar.gz
 EXECLINE_DIR = /tmp/execline
 EXECLINE_PATH = --with-lib=$(EXECLINE_DIR)/usr/lib/execline --with-include=$(EXECLINE_DIR)/usr/include --with-lib=$(EXECLINE_DIR)/usr/lib
 
-.PHONY : default manual container deps version build push local
+.PHONY : default submodule manual container deps version build push local
 
-default: upstream/Makefile container
+default: submodule container
 
-upstream/Makefile:
+submodule:
 	git submodule update --init
 
-manual:
+manual: submodule
 	./meta/launch /bin/bash || true
 
 container:
@@ -43,7 +43,7 @@ deps:
 	curl -sLo $(EXECLINE_TAR) $(EXECLINE_URL)
 	tar -x -C $(EXECLINE_DIR) -f $(EXECLINE_TAR)
 
-build: deps
+build: submodule deps
 	rm -rf $(BUILD_DIR)
 	cp -R upstream $(BUILD_DIR)
 	sed -i 's/0700/0755/' $(BUILD_DIR)/package/modes
