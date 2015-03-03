@@ -16,7 +16,7 @@ SKALIBS_TAR = skalibs.tar.gz
 SKALIBS_DIR = /tmp/skalibs
 SKALIBS_PATH = --with-sysdeps=$(SKALIBS_DIR)/usr/lib/skalibs/sysdeps --with-lib=$(SKALIBS_DIR)/usr/lib/skalibs --with-include=$(SKALIBS_DIR)/usr/include --with-dynlib=$(SKALIBS_DIR)/usr/lib
 
-EXECLINE_VERSION = 2.1.0.0-11
+EXECLINE_VERSION = 2.1.1.0-12
 EXECLINE_URL = https://github.com/amylum/execline/releases/download/$(EXECLINE_VERSION)/execline.tar.gz
 EXECLINE_TAR = execline.tar.gz
 EXECLINE_DIR = /tmp/execline
