@@ -1,0 +1,31 @@
+item do
+  expected do
+    github_tag
+    repo 'skarnet/s6'
+    regex /^v([\d.]+)$/
+  end
+
+  actual do
+    git_tag
+    regex /^(.*)-\d+$/
+  end
+
+  deps do
+    %w(skalibs execline).each do |dep|
+      item do
+        name dep
+
+        expected do
+          github_release
+          repo "amylum/#{dep}"
+        end
+
+        actual do
+          grep
+          file 'Makefile'
+          regex /^#{dep.upcase}_VERSION = ([\d.-]+)$/
+        end
+      end
+    end
+  end
+end
