@@ -7,16 +7,16 @@ RELEASE_FILE = /tmp/$(PACKAGE).tar.gz
 PACKAGE_VERSION = $$(awk -F= '/^version/ {print $$2}' upstream/package/info)
 PATCH_VERSION = $$(cat version)
 VERSION = $(PACKAGE_VERSION)-$(PATCH_VERSION)
-CONF_FLAGS = --enable-allstatic --disable-shared --enable-static --enable-static-libc
+CONF_FLAGS =
 PATH_FLAGS = --prefix=/usr --sbindir=/usr/bin --libexecdir=/usr/lib
 
-SKALIBS_VERSION = 2.3.10.0-38
+SKALIBS_VERSION = 2.3.10.0-40
 SKALIBS_URL = https://github.com/amylum/skalibs/releases/download/$(SKALIBS_VERSION)/skalibs.tar.gz
 SKALIBS_TAR = skalibs.tar.gz
 SKALIBS_DIR = /tmp/skalibs
 SKALIBS_PATH = --with-sysdeps=$(SKALIBS_DIR)/usr/lib/skalibs/sysdeps --with-lib=$(SKALIBS_DIR)/usr/lib/skalibs --with-include=$(SKALIBS_DIR)/usr/include --with-dynlib=$(SKALIBS_DIR)/usr/lib
 
-EXECLINE_VERSION = 2.1.5.0-28
+EXECLINE_VERSION = 2.1.5.0-29
 EXECLINE_URL = https://github.com/amylum/execline/releases/download/$(EXECLINE_VERSION)/execline.tar.gz
 EXECLINE_TAR = execline.tar.gz
 EXECLINE_DIR = /tmp/execline
