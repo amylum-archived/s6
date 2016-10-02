@@ -23,7 +23,7 @@ configure_flags(
   prefix: '/usr',
   sbindir: '/usr/bin',
   libexecdir: '/usr/lib',
-  :"with-sysdeps=#{dep(:skalibs)}/usr/lib/skalibs/sysdeps": nil
+  :"with-sysdeps=#{dep(:skalibs)}/usr/lib/skalibs/sysdeps" => nil,
   **with_flags
 )
 
