@@ -15,7 +15,6 @@ with_flags = %w(skalibs execline).map do |dep_name|
     :"with-lib=#{dep_path}/usr/lib",
     :"with-include=#{dep_path}/usr/include",
     :"with-dynlib=#{dep_path}/usr/lib",
-    :"with-sysdeps=${dep_path}/usr/lib/#{dep_name}/sysdeps"
   ]
 end.flatten
 with_flags = with_flags.map { |x| [x, nil] }.to_h
@@ -24,6 +23,7 @@ configure_flags(
   prefix: '/usr',
   sbindir: '/usr/bin',
   libexecdir: '/usr/lib',
+  :"with-sysdeps=#{dep(:skalibs)}/usr/lib/skalibs/sysdeps": nil
   **with_flags
 )
 
