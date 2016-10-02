@@ -1,0 +1,40 @@
+name 's6'
+org 'amylum'
+
+licenses 'COPYING'
+
+deps(
+  skalibs: '2.3.10.0-40',
+  execline: '2.1.5.0-29'
+)
+
+with_flags = %w(skalibs execline).map do |dep_name|
+  dep_path = dep(dep_name)
+  [
+    :"with-lib=#{dep_path}/usr/lib/#{dep_name}",
+    :"with-lib=#{dep_path}/usr/lib",
+    :"with-include=#{dep_path}/usr/include",
+    :"with-dynlib=#{dep_path}/usr/lib",
+    :"with-sysdeps=${dep_path}/usr/lib/#{dep_name}/sysdeps"
+  ]
+end.flatten
+with_flags = with_flags.map { |x| [x, nil] }.to_h
+
+configure_flags(
+  prefix: '/usr',
+  sbindir: '/usr/bin',
+  libexecdir: '/usr/lib',
+  **with_flags
+)
+
+harden
+
+build do
+  configure
+  make
+  install
+end
+
+test do
+  # TODO: tests
+end
