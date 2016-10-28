@@ -4,8 +4,8 @@ org 'amylum'
 licenses 'COPYING'
 
 deps(
-  skalibs: '2.3.10.0-40',
-  execline: '2.1.5.0-29'
+  skalibs: '2.4.0.0-38',
+  execline: '2.2.0.0-30'
 )
 
 with_flags = %w(skalibs execline).map do |dep_name|
