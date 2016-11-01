@@ -1,6 +1,6 @@
 [submodule "upstream"]
 	path = upstream
-	url = git://git.skarnet.org/s6
+	url = git://github.com/skarnet/s6
 [submodule "meta"]
 	path = meta
 	url = git://github.com/amylum/pkgforge-helper
