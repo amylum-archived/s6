@@ -1,4 +1,5 @@
 Prospectus.extra_dep('file', 'pkgforge')
+Prospectus.extra_dep('file', 'prospectus_pkgforge')
 
 item do
   expected do
@@ -12,21 +13,5 @@ item do
     regex /^(.*)-\d+$/
   end
 
-  deps do
-    PkgForge.load_from_file.deps.each do |dep_name, current_version|
-      item do
-        name dep_name
-
-        expected do
-          github_release
-          repo "amylum/#{dep_name}"
-        end
-
-        actual do
-          static
-          set current_version
-        end
-      end
-    end
-  end
+  extend ProspectusPkgforge::DepItems
 end
