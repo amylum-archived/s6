@@ -5,12 +5,12 @@ licenses 'COPYING'
 
 deps(
   skalibs: {
-    version: '2.6.1.0-1',
-    checksum: '2d1aa2cf401454ed932d86c3cf47382b7b1b286236eb992466fa799928ccfc5b'
+    version: '2.6.2.0-1',
+    checksum: '4f9fa0f805cf3af689ad89f870d66736df936539663d61fb910bfb847bb09026'
   },
   execline: {
-    version: '2.3.0.3-3',
-    checksum: '359439a3c9f406af66baf581631dbb09541ecf91a5847b460dff8b12d5d5d9a2'
+    version: '2.3.0.4-1',
+    checksum: '80c342723df1b30540e76d4e7d7a676f5dc69659babc801b7e9e390040edbcc0'
   }
 )
 
