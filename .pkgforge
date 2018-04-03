@@ -9,8 +9,8 @@ deps(
     checksum: '00d8128bc935f5175c9f24258532593d2b156f0551feec3457abcf48a61cef93'
   },
   execline: {
-    version: '2.3.0.4-4',
-    checksum: '614cc5b3990a553a166a0e691ce9991fea4aa04444a18f487f644359de313fc3'
+    version: '2.5.0.0-1',
+    checksum: 'cd55280a95abdb992d3acddaac614cb7d8a1d8733b5f41acf82b1f842d449141'
   }
 )
 
